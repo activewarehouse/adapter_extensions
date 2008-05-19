@@ -51,6 +51,29 @@ class AdapterTest < Test::Unit::TestCase
     assert_equal "3", connection.select_value("SELECT count(*) FROM people")
   end
   
+  def test_bulk_load_with_null_string
+    connection.truncate('people')
+    assert_nothing_raised do
+      options = {:fields => {:delimited_by => ',', :null_string => ''}}
+      connection.bulk_load(File.join(File.dirname(__FILE__), 'people.csv'), 'people', options)
+    end
+    assert_equal "3", connection.select_value("SELECT count(*) FROM people")
+  end
+  
+  def test_bulk_load_interprets_empty_strings_as_empty_strings
+    connection.truncate('people')
+    options = {:fields => {:delimited_by => ','}}
+    connection.bulk_load(File.join(File.dirname(__FILE__), 'people_with_empties.csv'), 'people', options)
+    assert_equal "0", connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL")
+  end
+  
+  def test_bulk_load_interprets_empty_strings_as_nulls
+    connection.truncate('people')
+    options = {:fields => {:delimited_by => ',', :null_string => ''}}
+    connection.bulk_load(File.join(File.dirname(__FILE__), 'people_with_empties.csv'), 'people', options)
+    assert_equal "1", connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL")
+  end
+  
   def test_bulk_load_with_empty_file
     connection.truncate('people')
     assert_nothing_raised do
