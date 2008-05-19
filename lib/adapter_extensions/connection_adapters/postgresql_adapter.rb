@@ -28,6 +28,7 @@ module ActiveRecord #:nodoc:
       # * <tt>:columns</tt> -- Array of column names defining the source file column order
       # * <tt>:fields</tt> -- Hash of options for fields:
       # * <tt>:delimited_by</tt> -- The field delimiter
+      # * <tt>:null_string</tt> -- The string that should be interpreted as NULL (in addition to \N)
       # * <tt>:enclosed_by</tt> -- The field enclosure
       def do_bulk_load(file, table_name, options={})
         q = "COPY #{table_name} "
@@ -36,7 +37,8 @@ module ActiveRecord #:nodoc:
         if options[:fields]
           q << "WITH "
           q << "DELIMITER '#{options[:fields][:delimited_by]}' " if options[:fields][:delimited_by]
-          if options[:fields][:enclosed_by]
+          q << "NULL '#{options[:fields][:null_string]}'" if options[:fields][:null_string]
+          if options[:fields][:enclosed_by] || options[:ignore] && options[:ignore] > 0
             q << "CSV "
             q << "HEADER " if options[:ignore] && options[:ignore] > 0
             q << "QUOTE '#{options[:fields][:enclosed_by]}' " if options[:fields][:enclosed_by]
