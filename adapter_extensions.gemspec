@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.specification_version = 2
   s.loaded = false
   s.email = "anthonyeden@gmail.com"
-  s.version = "0.4.0"
+  s.version = "0.4.0.1"
   s.required_ruby_version = ">= 0"
   s.name = "adapter_extensions"
   s.require_paths = ["lib"]
