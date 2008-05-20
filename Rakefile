@@ -4,6 +4,7 @@ require 'rake/rdoctask'
 require 'rake/packagetask'
 require 'rake/gempackagetask'
 require 'rake/contrib/rubyforgepublisher'
+require 'date'
 
 require File.join(File.dirname(__FILE__), 'lib/adapter_extensions', 'version')
 
@@ -92,36 +93,7 @@ end
 namespace :github do
   desc "Update Github Gemspec"
   task :update_gemspec do
-    skip_fields = %w(rubyforge_project date new_platform)
-    integer_fields = %w(specification_version)
-  
-    result = "Gem::Specification.new do |s|\n"
-    spec.instance_variables.each do |ivar|
-      value = spec.instance_variable_get(ivar)
-      name = ivar.split("@").last
-      next if skip_fields.include?(name) || value.nil? || value == "" || (value.respond_to?(:empty?) && value.empty?)
-      if name == "dependencies"
-        value.each do |d|
-          dep, *ver = d.to_s.split(" ")
-          result << "  s.add_dependency #{dep.inspect}, #{ver.join(" ").inspect.gsub(/[()]/, "")}\n"
-        end
-      else
-        case value
-        when Array
-          value = name != "files" ? value.inspect : value.inspect.split(",").join(",\n   ")
-        when String
-          value = value.to_i if integer_fields.include?(name)
-          value = value.inspect
-        when Fixnum, TrueClass, FalseClass
-          value = value.inspect
-        else
-          value = value.to_s.inspect
-        end
-        result << "  s.#{name} = #{value}\n"
-      end
-    end
-    result << "end"
-    File.open(File.join(File.dirname(__FILE__), "#{spec.name}.gemspec"), "w"){|f| f << result}
+    File.open(File.join(File.dirname(__FILE__), "#{spec.name}.gemspec"), "w"){|f| f << spec.to_ruby}
   end
 end
 
