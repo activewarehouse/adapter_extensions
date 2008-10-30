@@ -145,6 +145,6 @@ task :reinstall => [:package] do
   windows = RUBY_PLATFORM =~ /mswin/
   sudo = windows ? '' : 'sudo'
   gem = windows ? 'gem.bat' : 'gem'
-  `#{sudo} #{gem} uninstall -x -i #{PKG_NAME}`
+  `#{sudo} #{gem} uninstall #{PKG_NAME} -x`
   `#{sudo} #{gem} install pkg/#{PKG_NAME}-#{PKG_VERSION}`
 end
