@@ -21,3 +21,6 @@
 0.4 - September 17, 2007
 * Added copy_table method that can copy the structure and data from one table to another. Currently implemented in MySQL (tested), PostgreSQL (tested) and SQL Server adapters (untested).
 * Added support for SELECT..INTO for PostgreSQL.
+
+0.5 - 
+* Updated dependencies for gem to current versions of ActiveRecord, ActiveSupport and Rake. May not be compatible with Rails versions less than 2.x.

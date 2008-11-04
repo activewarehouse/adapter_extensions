@@ -5,19 +5,8 @@
 puts "Using AdapterExtensions"
 
 require 'rubygems'
-unless Kernel.respond_to?(:gem)
-  Kernel.send :alias_method, :gem, :require_gem
-end
-
-unless defined?(ActiveSupport)
-  gem 'activesupport'
-  require 'active_support'
-end
-
-unless defined?(ActiveRecord)
-  gem 'activerecord'
-  require 'active_record'
-end
+require 'active_support'
+require 'active_record'
 
 $:.unshift(File.dirname(__FILE__))
 Dir[File.dirname(__FILE__) + "/adapter_extensions/**/*.rb"].each { |file| require(file) }
