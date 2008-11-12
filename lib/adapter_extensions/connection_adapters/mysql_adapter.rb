@@ -35,6 +35,18 @@ module ActiveRecord #:nodoc:
       # * <tt>:enclosed_by</tt> -- The field enclosure
       def do_bulk_load(file, table_name, options={})
         return if File.size(file) == 0
+
+        # an unfortunate hack - setting the bulk load option after the connection has been 
+        # established does not seem to have any effect, and since the connection is made when 
+        # active-record is loaded, there's no chance for us to sneak it in earlier. So we 
+        # disconnect, set the option, then reconnect - fortunately, this only needs to happen once.
+        unless @bulk_load_enabled
+          disconnect!
+          @connection.options(Mysql::OPT_LOCAL_INFILE, true)
+          connect
+          @bulk_load_enabled = true
+        end
+
         q = "LOAD DATA LOCAL INFILE '#{file}' INTO TABLE #{table_name}"
         if options[:fields]
           q << " FIELDS"
