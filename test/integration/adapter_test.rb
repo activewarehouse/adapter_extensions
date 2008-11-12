@@ -71,7 +71,8 @@ class AdapterTest < Test::Unit::TestCase
     connection.truncate('people')
     options = {:fields => {:delimited_by => ',', :null_string => ''}}
     connection.bulk_load(File.join(File.dirname(__FILE__), 'people_with_empties.csv'), 'people', options)
-    assert_equal "1", connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL")
+    assert_equal "1", connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL"),
+      "NOTE: this is a known issue with MySQL - any other db should work correctly"
   end
   
   def test_bulk_load_with_empty_file
