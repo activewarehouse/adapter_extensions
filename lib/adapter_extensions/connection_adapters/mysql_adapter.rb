@@ -52,6 +52,7 @@ module ActiveRecord #:nodoc:
       # * <tt>:fields</tt> -- Hash of options for fields:
       # * <tt>:delimited_by</tt> -- The field delimiter
       # * <tt>:enclosed_by</tt> -- The field enclosure
+      # * <tt>:replace</tt> -- Add in REPLACE to LOAD DATA INFILE command
       # * <tt>:disable_keys</tt> -- if set to true, disable keys, loads, then enables again
       def do_bulk_load(file, table_name, options={})
         return if File.size(file) == 0
@@ -67,15 +68,15 @@ module ActiveRecord #:nodoc:
           @bulk_load_enabled = true
         end
 
-        q = "LOAD DATA LOCAL INFILE '#{file}' INTO TABLE #{table_name}"
+        q = "LOAD DATA LOCAL INFILE '#{file}' #{options[:replace] ? 'REPLACE' : ''} INTO TABLE #{table_name}"
         if options[:fields]
           q << " FIELDS"
           q << " TERMINATED BY '#{options[:fields][:delimited_by]}'" if options[:fields][:delimited_by]
           q << " ENCLOSED BY '#{options[:fields][:enclosed_by]}'" if options[:fields][:enclosed_by]
         end
         q << " IGNORE #{options[:ignore]} LINES" if options[:ignore]
-        q << " (#{options[:columns].join(',')})" if options[:columns]
-        
+        q << " (#{options[:columns].map { |c| quote_column_name(c.to_s) }.join(',')})" if options[:columns]
+         
         if options[:disable_keys]
           with_keys_disabled(table_name) { execute(q) }
         else
