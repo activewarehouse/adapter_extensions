@@ -2,8 +2,6 @@
 #
 # Requiring this file will require all of the necessary files to function.
 
-puts "Using AdapterExtensions"
-
 require 'rubygems'
 require 'active_support'
 require 'active_record'
