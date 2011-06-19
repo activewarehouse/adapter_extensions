@@ -1,3 +1,7 @@
+# lots of folks doing something like this now - take a look for other good ideas
+# https://github.com/jsuchal/activerecord-fast-import/blob/master/lib/activerecord-fast-import.rb
+# https://github.com/EmmanuelOga/load_data_infile/blob/master/lib/load_data_infile.rb
+
 # Source code for the MysqlAdapter extensions.
 module ActiveRecord #:nodoc:
   module ConnectionAdapters #:nodoc:
@@ -20,6 +24,21 @@ module ActiveRecord #:nodoc:
           execute "INSERT INTO #{new_table_name} SELECT * FROM #{old_table_name}"
         end
       end
+
+      def disable_keys(table)
+        execute("ALTER TABLE #{table} DISABLE KEYS")
+      end
+
+      def enable_keys(table)
+        execute("ALTER TABLE #{table} ENABLE KEYS")
+      end
+
+      def with_keys_disabled(table)
+        disable_keys(table)
+        yield
+      ensure
+        enable_keys(table)
+      end      
     
       protected
       # Call +bulk_load+, as that method wraps this method.
@@ -33,6 +52,8 @@ module ActiveRecord #:nodoc:
       # * <tt>:fields</tt> -- Hash of options for fields:
       # * <tt>:delimited_by</tt> -- The field delimiter
       # * <tt>:enclosed_by</tt> -- The field enclosure
+      # * <tt>:replace</tt> -- Add in REPLACE to LOAD DATA INFILE command
+      # * <tt>:disable_keys</tt> -- if set to true, disable keys, loads, then enables again
       def do_bulk_load(file, table_name, options={})
         return if File.size(file) == 0
 
@@ -47,15 +68,22 @@ module ActiveRecord #:nodoc:
           @bulk_load_enabled = true
         end
 
-        q = "LOAD DATA LOCAL INFILE '#{file}' INTO TABLE #{table_name}"
+        q = "LOAD DATA LOCAL INFILE '#{file}' #{options[:replace] ? 'REPLACE' : ''} INTO TABLE #{table_name}"
         if options[:fields]
           q << " FIELDS"
           q << " TERMINATED BY '#{options[:fields][:delimited_by]}'" if options[:fields][:delimited_by]
           q << " ENCLOSED BY '#{options[:fields][:enclosed_by]}'" if options[:fields][:enclosed_by]
         end
         q << " IGNORE #{options[:ignore]} LINES" if options[:ignore]
-        q << " (#{options[:columns].join(',')})" if options[:columns]
-        execute(q)
+        q << " (#{options[:columns].map { |c| quote_column_name(c.to_s) }.join(',')})" if options[:columns]
+
+        puts q
+        if options[:disable_keys]
+          with_keys_disabled(table_name) { execute(q) }
+        else
+          execute(q)
+        end
+        
       end
       
     end
