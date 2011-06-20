@@ -1,10 +1,4 @@
 # Source file identifying the version of AdapterExtensions in this package
 module AdapterExtensions#:nodoc:
-  module VERSION #:nodoc:
-    MAJOR = 0
-    MINOR = 5
-    TINY  = 0
-
-    STRING = [MAJOR, MINOR, TINY].join('.')
-  end
+  VERSION = "0.9.5.rc1"
 end
