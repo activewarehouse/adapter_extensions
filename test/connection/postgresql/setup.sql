@@ -13,6 +13,7 @@ create table places (
 delete from places;
 
 create table truncate_test (
+  id SERIAL PRIMARY KEY,
 	x char(4)
 );
 delete from truncate_test;

@@ -5,9 +5,15 @@ module ActiveRecord #:nodoc:
     # is provided, in others it is adapter-dependent and the method will
     # raise a NotImplementedError if the adapter does not implement that method
     class AbstractAdapter
-      # Truncate the specified table
-      def truncate(table_name)
-        execute("TRUNCATE TABLE #{table_name}")
+      # Truncate the specified table - allow to pass an optional string
+      # to let the called add extra parameters like RESET IDENTITY for pg
+      def truncate(table_name, options=nil)
+        statement = [
+          'TRUNCATE TABLE',
+          table_name,
+          options
+        ].compact.join(' ')
+        execute(statement)
       end
       
       # Bulk loading interface. Load the data from the specified file into the
