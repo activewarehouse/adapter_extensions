@@ -77,7 +77,6 @@ module ActiveRecord #:nodoc:
         q << " IGNORE #{options[:ignore]} LINES" if options[:ignore]
         q << " (#{options[:columns].map { |c| quote_column_name(c.to_s) }.join(',')})" if options[:columns]
 
-        puts q
         if options[:disable_keys]
           with_keys_disabled(table_name) { execute(q) }
         else
