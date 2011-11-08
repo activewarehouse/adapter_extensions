@@ -1,7 +1,8 @@
-0.9.5 - not yet released
+0.9.5 - November 8, 2011
 * Add in REPLACE to LOAD DATA INFILE command (jayzes/kookster)
 * Remove FasterCSV from dependencies (not used apparently)
 * Allow to pass options (like RESTART IDENTITY) to truncate (thbar)
+* Don't print "Using AdapterExtensions" when required (thbar)
 
 0.5 - January 14, 2009
 * Updated dependencies for gem to current versions of ActiveRecord, ActiveSupport and Rake. May not be compatible with Rails versions less than 2.x.
