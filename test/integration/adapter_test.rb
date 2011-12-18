@@ -19,18 +19,18 @@ class AdapterTest < Test::Unit::TestCase
       connection.execute("insert into truncate_test (x) values ('#{value}')")
     end
     
-    assert_equal "3", connection.select_value("SELECT count(*) FROM truncate_test")
+    assert_equal 3, connection.select_value("SELECT count(*) FROM truncate_test")
     assert_nothing_raised { connection.truncate('truncate_test') }
-    assert_equal "0", connection.select_value("SELECT count(*) FROM truncate_test")
+    assert_equal 0, connection.select_value("SELECT count(*) FROM truncate_test")
   end
    
   def test_bulk_load
     connection.truncate('people')
-    assert_equal "0", connection.select_value("SELECT count(*) FROM people")
+    assert_equal 0, connection.select_value("SELECT count(*) FROM people")
     assert_nothing_raised do
       connection.bulk_load(File.join(File.dirname(__FILE__), 'people.txt'), 'people')
     end
-    assert_equal "3", connection.select_value("SELECT count(*) FROM people")
+    assert_equal 3, connection.select_value("SELECT count(*) FROM people")
   end
    
   def test_bulk_load_csv
@@ -39,7 +39,7 @@ class AdapterTest < Test::Unit::TestCase
       options = {:fields => {:delimited_by => ','}}
       connection.bulk_load(File.join(File.dirname(__FILE__), 'people.csv'), 'people', options)
     end
-    assert_equal "3", connection.select_value("SELECT count(*) FROM people")
+    assert_equal 3, connection.select_value("SELECT count(*) FROM people")
   end
   
   def test_bulk_load_with_enclosed_by
@@ -48,7 +48,7 @@ class AdapterTest < Test::Unit::TestCase
       options = {:fields => {:delimited_by => ',', :enclosed_by => '"'}}
       connection.bulk_load(File.join(File.dirname(__FILE__), 'people.csv'), 'people', options)
     end
-    assert_equal "3", connection.select_value("SELECT count(*) FROM people")
+    assert_equal 3, connection.select_value("SELECT count(*) FROM people")
   end
   
   def test_bulk_load_with_null_string
@@ -57,21 +57,21 @@ class AdapterTest < Test::Unit::TestCase
       options = {:fields => {:delimited_by => ',', :null_string => ''}}
       connection.bulk_load(File.join(File.dirname(__FILE__), 'people.csv'), 'people', options)
     end
-    assert_equal "3", connection.select_value("SELECT count(*) FROM people")
+    assert_equal 3, connection.select_value("SELECT count(*) FROM people")
   end
   
   def test_bulk_load_interprets_empty_strings_as_empty_strings
     connection.truncate('people')
     options = {:fields => {:delimited_by => ','}}
     connection.bulk_load(File.join(File.dirname(__FILE__), 'people_with_empties.csv'), 'people', options)
-    assert_equal "0", connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL")
+    assert_equal 0, connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL")
   end
   
   def test_bulk_load_interprets_empty_strings_as_nulls
     connection.truncate('people')
     options = {:fields => {:delimited_by => ',', :null_string => ''}}
     connection.bulk_load(File.join(File.dirname(__FILE__), 'people_with_empties.csv'), 'people', options)
-    assert_equal "1", connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL"),
+    assert_equal 1, connection.select_value("SELECT count(*) FROM people WHERE first_name IS NULL"),
       "NOTE: this is a known issue with MySQL - any other db should work correctly"
   end
   
