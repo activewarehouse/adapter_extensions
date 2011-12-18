@@ -1,4 +1,5 @@
 require 'bundler'
+Bundler::GemHelper.install_tasks
 require 'rake'
 require 'rake/testtask'
 require 'rdoc'
@@ -58,17 +59,6 @@ task :lines do
   end
 
   puts "Total: Lines #{total_lines}, LOC #{total_codelines}"
-end
-
-desc "Publish the release files to RubyForge (UNTESTED CURRENTLY)"
-task :release => [ :package ] do
-  `rubyforge login`
-
-  for ext in %w( gem tgz zip )
-    release_command = "rubyforge add_release activewarehouse #{PKG_NAME} 'REL #{PKG_VERSION}' pkg/#{PKG_NAME}-#{PKG_VERSION}.#{ext}"
-    puts release_command
-    system(release_command)
-  end
 end
 
 desc "Publish the API documentation (UNTESTED CURRENTLY)"
