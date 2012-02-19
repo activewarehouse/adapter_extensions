@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('activerecord',        '>= 2.1.0')
   s.add_development_dependency('flexmock')
   s.add_development_dependency('mysql2', '< 0.3')
+  s.add_development_dependency('rdoc')
 
   s.files              = `git ls-files`.split("\n")
   s.test_files         = `git ls-files -- {test}/*`.split("\n")
