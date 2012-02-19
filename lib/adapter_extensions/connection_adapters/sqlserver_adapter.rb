@@ -21,23 +21,47 @@ module ActiveRecord #:nodoc:
       # Call +bulk_load+, as that method wraps this method.
       # 
       # Bulk load the data in the specified file. This implementation relies
-      # on bcp being in your PATH.
+      # on freebcp being in your PATH.
       #
-      # Options:
-      # * <tt>:ignore</tt> -- Ignore the specified number of lines from the source file
-      # * <tt>:columns</tt> -- Array of column names defining the source file column order
+      # Currently supported options:
+      # * <tt>:bin</tt> -- alternate path to freebcp
+      # * <tt>:max_errors</tt> -- maximum number of errors (freebcp -m parameter)
+      # * <tt>:env</tt> -- override ActiveRecord environment to be used
       # * <tt>:fields</tt> -- Hash of options for fields:
       # * <tt>:delimited_by</tt> -- The field delimiter
-      # * <tt>:enclosed_by</tt> -- The field enclosure
-      def do_bulk_load(file, table_name, options={})
-        env_name = options[:env] || RAILS_ENV
+      # :columns is currently unsupported and will raise an exception
+      def do_bulk_load(filename, table_name, options={})
+        env_name = options[:env] || Rails.env
         config = ActiveRecord::Base.configurations[env_name]
-          puts "Loading table \"#{table_name}\" from file \"#{filename}\""
-          cmd = "bcp \"#{config['database']}.dbo.#{table_name}\" in " +
-                "\"#{filename}\" -S \"#{config['host']}\" -c " +
-                "-t \"#{options[:delimited_by]}\" -b10000 -a8192 -q -E -U \"#{config['username']}\" " +
-                "-P \"#{config['password']}\" -e \"#{filename}.in.errors\""
-          `#{cmd}`
+
+        raise NotImplementedError.new(":columns option is not currently supported") if options[:columns]
+
+        # work in progress.
+        # - http://linux.die.net/man/1/freebcp
+        # - http://stackoverflow.com/a/924943/20302
+        # - http://msdn.microsoft.com/en-us/library/ms162802.aspx
+        # - http://www.dbforums.com/microsoft-sql-server/1624618-how-bring-out-column-names-bcp.html
+        
+        command = []
+        command << (options[:bin] || 'freebcp')
+        command << "\"#{config['database']}.dbo.#{table_name}\""
+        command << "in \"#{filename}\""
+        command << "-S \"#{config['host']}\""
+        command << "-U \"#{config['username']}\""
+        command << "-P \"#{config['password']}\""
+        command << "-c" # character mode
+        command << "-t \"#{options[:fields][:delimited_by]}\"" if options[:fields] && options[:fields][:delimited_by]
+        command << "-b 10000" # bulk size
+
+        command << "-m #{options[:max_errors]}" if options[:max_errors]
+        command << "-e \"#{filename}.in.errors\""
+        command = command.join(' ')
+
+        # left-overs from legacy bcp call - must see if they must remain or not
+        # -a8192 -q -E 
+
+        # TODO - raise a better exception here
+        raise "bulk load failed!" unless Kernel.system(command)
       end
     end
   end

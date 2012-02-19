@@ -1,3 +1,6 @@
+0.9.6 - not released yet
+* Bring back SQLServer bulk import - requires freebcp (thbar)
+
 0.9.5 - November 8, 2011
 * Add in REPLACE to LOAD DATA INFILE command (jayzes/kookster)
 * Remove FasterCSV from dependencies (not used apparently)
