@@ -29,7 +29,7 @@ task :create_test_db do
       system! "mysql adapter_extensions_test < test/config/databases/mysql_setup.sql"
     when /postgres/;
       system! "psql -c 'create database adapter_extensions_test;' -U postgres"
-      system! "psql -U postgres -f test/config/databases/postgresql_setup.sql"
+      system! "psql -d adapter_extensions_test -U postgres -f test/config/databases/postgresql_setup.sql"
     else abort("I don't know how to create the database for DB=#{ENV['DB']}!")
   end
 end
