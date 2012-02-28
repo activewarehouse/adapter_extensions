@@ -6,4 +6,4 @@ rvm:
 env:
   - DB=mysql2
 before_script:
-  - "mysql -e 'create database adapter_extensions_test;'"
+  - rake create_test_db

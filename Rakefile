@@ -16,6 +16,22 @@ Rake::TestTask.new(:test) do |t|
   # TODO: reset the database
 end
 
+def system!(cmd)
+  puts cmd
+  raise "Command failed!" unless system(cmd)
+end
+
+task :create_test_db do
+  case ENV['DB']
+    when /mysql/;
+      # TODO - extract this info from database.yml
+      system! "mysql -e 'create database adapter_extensions_test;'"
+    when /postgres/;
+      system! "psql -c 'create database adapter_extensions;' -U postgres"
+    else abort("I don't know how to create the database for DB=#{ENV['DB']}!")
+  end
+end
+
 namespace :rcov do
   desc 'Measures test coverage'
   task :test do
