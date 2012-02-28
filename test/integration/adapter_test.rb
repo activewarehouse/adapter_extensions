@@ -2,9 +2,15 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 # Integration tests
 class AdapterTest < Test::Unit::TestCase
-  
-  require File.dirname(__FILE__) + "/#{ENV['DB']}_tests"
-  include "#{ENV['DB'].capitalize}Tests".constantize
+
+  # quick hack to load adapter-specific tests - TODO: refactor
+  # this also allows to run the same tests for mysql and mysql2
+  adapter_tests = ENV['DB']
+  raise "Missing DB environment variable" unless adapter_tests
+  adapter_tests = 'mysql' if adapter_tests == 'mysql2'
+  require File.dirname(__FILE__) + "/#{adapter_tests}_tests"
+  include "#{adapter_tests.capitalize}Tests".constantize
+  # end of hack
 
   def select_value(query)
     value = connection.select_value(query)
