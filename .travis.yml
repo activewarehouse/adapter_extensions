@@ -1,3 +1,7 @@
 language: ruby
 rvm:
   - 1.9.3
+env:
+  - DB=mysql2
+before_script:
+  - "mysql -e 'create database adapter_extensions_test;'"
