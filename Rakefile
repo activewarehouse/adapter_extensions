@@ -34,6 +34,14 @@ task :create_test_db do
   end
 end
 
+# experimental task to reproduce the Travis behaviour locally - TODO: find if there's something in Travis for this?
+task :local_travis, :db do |t, args|
+  ENV['BUNDLE_GEMFILE'] = File.expand_path(File.dirname(__FILE__) + '/test/config/gemfiles/Gemfile.rails-3.2.x')
+  ENV['DB'] = args[:db] || 'mysql2'
+  system! 'bundle install'
+  system! 'bundle exec rake'
+end
+
 namespace :rcov do
   desc 'Measures test coverage'
   task :test do
