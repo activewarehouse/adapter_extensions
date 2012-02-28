@@ -1,7 +1,6 @@
 $:.unshift(File.dirname(__FILE__))
 
 require 'test/unit'
-require 'rubygems'
 require 'flexmock/test_unit'
 require 'pp'
 
