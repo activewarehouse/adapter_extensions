@@ -26,8 +26,10 @@ task :create_test_db do
     when /mysql/;
       # TODO - extract this info from database.yml
       system! "mysql -e 'create database adapter_extensions_test;'"
+      system! "mysql adapter_extensions_test < test/config/databases/mysql_setup.sql"
     when /postgres/;
       system! "psql -c 'create database adapter_extensions_test;' -U postgres"
+      system! "psql -U postgres -f test/config/databases/postgresql_setup.sql"
     else abort("I don't know how to create the database for DB=#{ENV['DB']}!")
   end
 end
