@@ -1,4 +1,6 @@
 language: ruby
+gemfile:
+  - test/config/gemfiles/Gemfile.rails-3.2.x
 rvm:
   - 1.9.3
 env:
