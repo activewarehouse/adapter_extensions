@@ -1,0 +1,5 @@
+mysql2:
+  adapter: mysql2
+  database: adapter_extensions_test
+  username: root
+  encoding: utf8
