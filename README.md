@@ -15,6 +15,8 @@ AdapterExtensions add extra abilities to Rails ActiveRecord adapters, including:
   </tr>
   <tr>
     <th>ActiveRecord adapters</th>
+    <td></td>
+    <td></td>
   <tr>
     <td>mysql</td>
     <td>OK</td>
@@ -37,11 +39,13 @@ AdapterExtensions add extra abilities to Rails ActiveRecord adapters, including:
   </tr>
   <tr>
     <th>ActiveRecord/ActiveSupport versions</th>
-    <td>>= 3</td>
-    <td>< 3</td>
+    <td>&gt;= 3</td>
+    <td>&lt; 3</td>
   </tr>
   <tr>
     <th>Ruby versions</th>
+    <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>MRI 1.9.3</td>
