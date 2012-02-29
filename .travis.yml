@@ -11,4 +11,4 @@ env:
   - DB=mysql
   - DB=postgresql
 before_script:
-  - rake create_test_db
+  - rake ci:create_db
