@@ -19,6 +19,9 @@ class AdapterTest < Test::Unit::TestCase
     ActiveRecord::Base.configurations = configs
     ActiveRecord::Base.establish_connection(ENV['DB'])
 
+    # current fix to allow bulk load. this needs more work
+    # to enable it only at bulk load time if possible
+    Mysql2::Client.default_query_options[:connect_flags] |= Mysql2::Client::LOCAL_FILES
   end
 
   def select_value(query)
