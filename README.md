@@ -44,6 +44,8 @@ AdapterExtensions add extra abilities to Rails ActiveRecord adapters, including:
   </tr>
   <tr>
     <th>Ruby versions</th>
+    <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>MRI 1.9.3</td>
