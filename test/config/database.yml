@@ -3,6 +3,7 @@ mysql2:
   database: adapter_extensions_test
   username: root
   encoding: utf8
+  local_infile: true
 postgresql:
   adapter: postgresql
   database: adapter_extensions_test
