@@ -1,10 +1,16 @@
-# Extensions to the Rails ActiveRecord adapters.
-#
-# Requiring this file will require all of the necessary files to function.
+class ActiveRecord::Base
+  class << self
+    def establish_connection_with_adapter_extensions(*args)
+      establish_connection_without_adapter_extensions(*args)
+      ActiveSupport.run_load_hooks(:active_record_connection_established, connection_pool)
+    end
+    alias_method_chain :establish_connection, :adapter_extensions
+  end
+end
 
-require 'rubygems'
-require 'active_support'
-require 'active_record'
-
-$:.unshift(File.dirname(__FILE__))
-Dir[File.dirname(__FILE__) + "/adapter_extensions/**/*.rb"].each { |file| require(file) }
+ActiveSupport.on_load(:active_record_connection_established) do |connection_pool|
+  if !defined?(AdapterExtensions)
+    require File.join File.dirname(__FILE__),  "adapter_extensions/base"
+  end
+  AdapterExtensions.load_from_connection_pool connection_pool
+end
