@@ -6,5 +6,6 @@ rvm:
 env:
   - DB=mysql2
   - DB=postgresql
+  - DB=mysql
 before_script:
   - rake create_test_db
