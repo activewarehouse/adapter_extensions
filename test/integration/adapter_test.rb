@@ -12,6 +12,15 @@ class AdapterTest < Test::Unit::TestCase
   include "#{adapter_tests.capitalize}Tests".constantize
   # end of hack
 
+  def setup
+    raise "Missing required DB environment variable" unless ENV['DB']
+    configs = YAML.load_file(File.dirname(__FILE__)+ '/../config/database.yml')
+    raise "Configuration #{ENV['DB']} not in database.yml!" unless configs[ENV['DB']]
+    ActiveRecord::Base.configurations = configs
+    ActiveRecord::Base.establish_connection(ENV['DB'])
+
+  end
+
   def select_value(query)
     value = connection.select_value(query)
     value = Integer(value) if ENV['DB'] =~ /postgresql/
