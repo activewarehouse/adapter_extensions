@@ -35,8 +35,7 @@ module AdapterExtensions::MysqlAdapter
 protected
   # Call +bulk_load+, as that method wraps this method.
   # 
-  # Bulk load the data in the specified file. This implementation always uses the LOCAL keyword
-  # so the file must be found locally, not on the remote server, to be loaded.
+  # Bulk load the data in the specified file.
   #
   # Options:
   # * <tt>:ignore</tt> -- Ignore the specified number of lines from the source file
@@ -46,10 +45,15 @@ protected
   # * <tt>:enclosed_by</tt> -- The field enclosure
   # * <tt>:replace</tt> -- Add in REPLACE to LOAD DATA INFILE command
   # * <tt>:disable_keys</tt> -- if set to true, disable keys, loads, then enables again
+  # * <tt>:local_infile</tt>::
+  #   if set to true, use LOAD DATA LOCAL INFILE rather than LOAD DATA INFILE
+  #   see http://dev.mysql.com/doc/refman/5.0/en/load-data-local.html for security issues with this                     
   def do_bulk_load(file, table_name, options={})
     return if File.size(file) == 0
 
-    q = "LOAD DATA LOCAL INFILE '#{file}' #{options[:replace] ? 'REPLACE' : ''} INTO TABLE #{table_name}"
+    replace = options[:replace] ? 'REPLACE' : ''
+    local = options[:local_infile] ? 'LOCAL' : ''
+    q = "LOAD DATA #{local} INFILE '#{file}' #{replace} INTO TABLE #{table_name}"
     if options[:fields]
       q << " FIELDS"
       q << " TERMINATED BY '#{options[:fields][:delimited_by]}'" if options[:fields][:delimited_by]
