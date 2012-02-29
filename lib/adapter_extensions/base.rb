@@ -8,7 +8,8 @@ module AdapterExtensions
   # Loads the extensions for a specific database adapter
   def self.require_adapter(adapter)
     require File.join(AdapterPath,"/abstract_adapter")
-    require File.join(AdapterPath,"/#{adapter}_adapter")
+    specific_adapter = File.join(AdapterPath,"/#{adapter}_adapter")
+    require specific_adapter if File.exists?(specific_adapter + '.rb')
   end
 
   def self.load_from_connection_pool(connection_pool)
