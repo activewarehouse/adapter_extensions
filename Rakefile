@@ -52,8 +52,9 @@ namespace :ci do
       env, gemfile = *x.flatten
       db = env.gsub('DB=', '')
       print [db, gemfile].inspect.ljust(40) + ": "
-      result = system "rake ci:run_one[#{db},#{gemfile}] > /dev/null 2>&1"
-      result = result ? "OK" : "FAIL"
+      cmd = "rake \"ci:run_one[#{db},#{gemfile}]\""
+      result = system "#{cmd} > /dev/null 2>&1"
+      result = result ? "OK" : "FAILED! - re-run with: #{cmd}"
       puts result
     end
   end
