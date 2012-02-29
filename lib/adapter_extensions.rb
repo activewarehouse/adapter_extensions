@@ -1,3 +1,5 @@
+require 'adapter_extensions/base'
+
 class ActiveRecord::Base
   class << self
     def establish_connection_with_adapter_extensions(*args)
@@ -9,8 +11,5 @@ class ActiveRecord::Base
 end
 
 ActiveSupport.on_load(:active_record_connection_established) do |connection_pool|
-  if !defined?(AdapterExtensions)
-    require File.join File.dirname(__FILE__),  "adapter_extensions/base"
-  end
   AdapterExtensions.load_from_connection_pool connection_pool
 end
