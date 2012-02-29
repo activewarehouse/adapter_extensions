@@ -21,9 +21,8 @@ class AdapterTest < Test::Unit::TestCase
   end
 
   def select_value(query)
-    value = connection.select_value(query)
-    value = Integer(value) if ENV['DB'] =~ /postgresql/
-    value
+    # mysql and postgresql will return a string, while mysql2 will return an integer here - smooth things out
+    Integer(connection.select_value(query))
   end
   
   def test_add_select_into_table
