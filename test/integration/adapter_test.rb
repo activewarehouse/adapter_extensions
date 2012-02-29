@@ -12,10 +12,17 @@ class AdapterTest < Test::Unit::TestCase
   include "#{adapter_tests.capitalize}Tests".constantize
   # end of hack
 
+  def setup
+    raise "Missing required DB environment variable" unless ENV['DB']
+    configs = YAML.load_file(File.dirname(__FILE__)+ '/../config/database.yml')
+    raise "Configuration #{ENV['DB']} not in database.yml!" unless configs[ENV['DB']]
+    ActiveRecord::Base.configurations = configs
+    ActiveRecord::Base.establish_connection(ENV['DB'])
+  end
+
   def select_value(query)
-    value = connection.select_value(query)
-    value = Integer(value) if ENV['DB'] =~ /postgresql/
-    value
+    # mysql and postgresql will return a string, while mysql2 will return an integer here - smooth things out
+    Integer(connection.select_value(query))
   end
   
   def test_add_select_into_table
@@ -80,6 +87,9 @@ class AdapterTest < Test::Unit::TestCase
   end
   
   def test_bulk_load_interprets_empty_strings_as_nulls
+    # known issue with mysql - test only on other dbs
+    return if ENV['DB'] =~ /mysql/
+
     connection.truncate('people')
     options = {:fields => {:delimited_by => ',', :null_string => ''}}
     connection.bulk_load(File.join(File.dirname(__FILE__), 'people_with_empties.csv'), 'people', options)
@@ -102,7 +112,7 @@ class AdapterTest < Test::Unit::TestCase
     when 'sqlserver', 'postgresql'
       assert_equal 'SELECT foo INTO new_table FROM bar',
       connection.add_select_into_table(new_table_name, sql_query)
-    when 'mysql'
+    when /mysql/
       assert_equal 'CREATE TABLE new_table SELECT foo FROM bar',
       connection.add_select_into_table(new_table_name, sql_query)
     else

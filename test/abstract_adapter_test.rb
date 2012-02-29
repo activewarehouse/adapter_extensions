@@ -1,18 +1,24 @@
 require File.dirname(__FILE__) + '/test_helper'
 
+require 'adapter_extensions/base'
+require 'adapter_extensions/adapters/abstract_adapter'
+
 class AbstractAdapterTest < Test::Unit::TestCase
   include ActiveRecord::ConnectionAdapters
-  class MyAdapter < AbstractAdapter
+
+  class MyAdapter
+    include AdapterExtensions::AbstractAdapter    
+    
     attr_accessor :query
-    def initialize
-      super(nil)
-    end
+
     def tables
       ['people']
     end
+
     def execute(query)
       @query = query
     end
+
   end
   
   attr_accessor :adapter

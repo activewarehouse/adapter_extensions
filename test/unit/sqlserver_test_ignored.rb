@@ -3,7 +3,12 @@ require File.dirname(__FILE__) + '/../test_helper'
 class SqlServerTest < Test::Unit::TestCase
 
   def adapter
-    @adapter ||= ActiveRecord::ConnectionAdapters::SQLServerAdapter.new(nil)
+    @adapter ||= begin
+      adapter = Object.new
+      adapter.extend(AdapterExtensions::AbstractAdapter)
+      adapter.extend(AdapterExtensions::SQLServerAdapter)
+      adapter
+    end
   end
 
   def prepare_mocks

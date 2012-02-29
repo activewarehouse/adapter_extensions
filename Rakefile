@@ -2,8 +2,6 @@ require 'bundler'
 Bundler::GemHelper.install_tasks
 require 'rake'
 require 'rake/testtask'
-require 'rdoc'
-require 'rdoc/task'
 
 desc 'Default: run unit tests.'
 task :default => :test
@@ -21,73 +19,44 @@ def system!(cmd)
   raise "Command failed!" unless system(cmd)
 end
 
-task :create_test_db do
-  case ENV['DB']
-    when /mysql/;
-      # TODO - extract this info from database.yml
-      system! "mysql -e 'create database adapter_extensions_test;'"
-      system! "mysql adapter_extensions_test < test/config/databases/mysql_setup.sql"
-    when /postgres/;
-      system! "psql -c 'create database adapter_extensions_test;' -U postgres"
-      system! "psql -d adapter_extensions_test -U postgres -f test/config/databases/postgresql_setup.sql"
-    else abort("I don't know how to create the database for DB=#{ENV['DB']}!")
-  end
-end
+# experimental tasks to reproduce the Travis behaviour locally
+namespace :ci do
 
-# experimental task to reproduce the Travis behaviour locally - TODO: find if there's something in Travis for this?
-task :local_travis, :db do |t, args|
-  ENV['BUNDLE_GEMFILE'] = File.expand_path(File.dirname(__FILE__) + '/test/config/gemfiles/Gemfile.rails-3.2.x')
-  ENV['DB'] = args[:db] || 'mysql2'
-  system! 'bundle install'
-  system! 'bundle exec rake'
-end
-
-namespace :rcov do
-  desc 'Measures test coverage'
-  task :test do
-    rm_f 'coverage.data'
-    mkdir 'coverage' unless File.exist?('coverage')
-    rcov = "rcov --aggregate coverage.data --text-summary -Ilib"
-    system("#{rcov} test/*_test.rb test/**/*_test.rb")
-    system("open coverage/index.html") if PLATFORM['darwin']
-  end
-end
-
-desc 'Generate documentation for the AdapterExtensions library.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'Extensions for Rails adapters'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
-
-desc "Generate code statistics"
-task :lines do
-  lines, codelines, total_lines, total_codelines = 0, 0, 0, 0
-
-  for file_name in FileList["lib/**/*.rb"]
-    next if file_name =~ /vendor/
-    f = File.open(file_name)
-
-    while line = f.gets
-      lines += 1
-      next if line =~ /^\s*$/
-      next if line =~ /^\s*#/
-      codelines += 1
+  desc "Create required databases for tests (db in [mysql, mysql2, postgresql])"
+  task :create_db, :db do |t, args|
+    db = args[:db] || ENV['DB']
+    case db
+      when /mysql/;
+        # TODO - extract this info from database.yml
+        system! "mysql -e 'create database adapter_extensions_test;'"
+        system! "mysql adapter_extensions_test < test/config/databases/mysql_setup.sql"
+      when /postgres/;
+        system! "psql -c 'create database adapter_extensions_test;' -U postgres"
+        system! "psql -d adapter_extensions_test -U postgres -f test/config/databases/postgresql_setup.sql"
+      else abort("I don't know how to create the database for DB=#{db}!")
     end
-    puts "L: #{sprintf("%4d", lines)}, LOC #{sprintf("%4d", codelines)} | #{file_name}"
-    
-    total_lines     += lines
-    total_codelines += codelines
-    
-    lines, codelines = 0, 0
   end
 
-  puts "Total: Lines #{total_lines}, LOC #{total_codelines}"
-end
+  desc "For current RVM, run the tests for one db and one gemfile"
+  task :run_one, :db, :gemfile do |t, args|
+    ENV['BUNDLE_GEMFILE'] = File.expand_path(args[:gemfile] || (File.dirname(__FILE__) + '/test/config/gemfiles/Gemfile.rails-3.2.x'))
+    ENV['DB'] = args[:db] || 'mysql2'
+    system! "bundle install && bundle exec rake"
+  end
 
-desc "Publish the API documentation (UNTESTED CURRENTLY)"
-task :pdoc => [:rdoc] do 
-  Rake::SshDirPublisher.new("aeden@rubyforge.org", "/var/www/gforge-projects/activewarehouse/adapter_extensions/rdoc", "rdoc").upload
+  desc "For current RVM, run the tests for all the combination in travis configuration"
+  task :run_matrix do
+    require 'cartesian'
+    config = YAML.load_file('.travis.yml')
+    config['env'].cartesian(config['gemfile']).each do |*x|
+      env, gemfile = *x.flatten
+      db = env.gsub('DB=', '')
+      print [db, gemfile].inspect.ljust(40) + ": "
+      cmd = "rake \"ci:run_one[#{db},#{gemfile}]\""
+      result = system "#{cmd} > /dev/null 2>&1"
+      result = result ? "OK" : "FAILED! - re-run with: #{cmd}"
+      puts result
+    end
+  end
+
 end
