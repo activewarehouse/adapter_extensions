@@ -1,5 +1,7 @@
-0.9.6 - not released yet
-* Bring back SQLServer bulk import - requires freebcp (thbar)
+1.0.0.rc1 - March 3, 2012
+* complete rewrite: Rails 3+ required
+* "mysql2" adapter support
+* work in progress SQLServer bulk import, requiring freebcp
 
 0.9.5 - November 8, 2011
 * Add in REPLACE to LOAD DATA INFILE command (jayzes/kookster)

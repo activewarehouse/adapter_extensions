@@ -12,7 +12,7 @@ See Travis for up-to-date info: [![Build Status](https://secure.travis-ci.org/ac
 <table>
   <tr>
     <th></th>
-    <th>master</th>
+    <th>v1.0.0.rc1</th>
     <th>v0.9.5</th>
   </tr>
   <tr>
@@ -71,7 +71,7 @@ Be sure to first read and understand the [security implications](http://dev.mysq
 
 v0.9.5 will always use `LOAD DATA LOCAL INFILE` for bulk load - this is not configurable.
 
-#### master
+#### v1.0.0.rc1
 
 This version should by default use `LOAD DATA INFILE` for safer defaults.
 
@@ -102,7 +102,7 @@ For mysql:
 
 v0.9.5 had a broken support for SQLServer.
 
-`master` has a work-in-progress bulk import using `freebcp`. More tweaking needed.
+v1.0.0.rc1 has a work-in-progress bulk import using `freebcp`. More tweaking needed.
 
 ### Running the tests
 
@@ -127,4 +127,4 @@ MIT
 
 * Thibaut Barrère (current maintainer)
 * original code by Anthony Eden and probably others (let me know if you read this!)
-* thanks to [Zach Dennis](https://github.com/zdennis/activerecord-import) for his work where I borrowed ideas for the rails-3 branch
+* thanks to [Zach Dennis](https://github.com/zdennis/activerecord-import) for his work where I borrowed ideas for the rails 3 rewrite

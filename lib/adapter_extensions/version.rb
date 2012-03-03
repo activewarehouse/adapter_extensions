@@ -1,4 +1,4 @@
 # Source file identifying the version of AdapterExtensions in this package
 module AdapterExtensions#:nodoc:
-  VERSION = "0.9.5"
+  VERSION = "1.0.0.rc1"
 end
