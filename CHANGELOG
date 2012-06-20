@@ -1,4 +1,4 @@
-1.0.0.rc1 - March 3, 2012
+1.0.0 - June 20, 2012
 * complete rewrite: Rails 3+ required
 * "mysql2" adapter support
 * work in progress SQLServer bulk import, requiring freebcp
