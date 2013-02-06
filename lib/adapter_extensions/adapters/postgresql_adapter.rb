@@ -82,22 +82,20 @@ protected
   end
 
   def send_data_to_copy(file, conn, q, buffer_size)
-    conn.transaction do
-      conn.exec(q)
+    conn.exec(q)
 
-      buf = ''
-      io = File.open(file)
+    buf = ''
+    io = File.open(file)
 
-      begin
-        while io.read(buffer_size, buf)
-          until conn.put_copy_data(buf)
-            sleep 0.1
-          end
+    begin
+      while io.read(buffer_size, buf)
+        until conn.put_copy_data(buf)
+          sleep 0.1
         end
-      ensure
-        conn.put_copy_end
-        io.close
       end
+    ensure
+      conn.put_copy_end
+      io.close
     end
   end
 end
