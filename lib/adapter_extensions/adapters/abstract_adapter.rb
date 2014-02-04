@@ -5,7 +5,7 @@ module AdapterExtensions::AbstractAdapter
   def truncate(table_name, options=nil)
     statement = [
       'TRUNCATE TABLE',
-      table_name,
+      [table_name].flatten.join(','),
       options
     ].compact.join(' ')
     execute(statement)

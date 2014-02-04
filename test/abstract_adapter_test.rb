@@ -32,6 +32,13 @@ class AbstractAdapterTest < Test::Unit::TestCase
     assert_equal "TRUNCATE TABLE #{table_name}", adapter.query
   end
   
+  def test_multi_truncate
+    table_names = ['foo', 'bar']
+    adapter.truncate(table_names)
+    assert_equal "TRUNCATE TABLE #{table_names.join(',')}", adapter.query
+  end
+  
+  
   def test_support_select_into_table_should_return_false
     assert_equal false, adapter.support_select_into_table?
   end
