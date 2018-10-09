@@ -96,7 +96,10 @@ protected
     ensure
       conn.put_copy_end
       io.close
-      conn.get_result.check
     end
+    
+    res = conn.get_result
+    STDOUT.puts "Copy Result: #{res.res_status(res.result_status)} on #{res.cmd_tuples}"
+    res.check
   end
 end
