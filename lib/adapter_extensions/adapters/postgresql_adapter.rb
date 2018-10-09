@@ -43,7 +43,7 @@ protected
     execute(q)
   end
 
-  DEFAULT_BUFFER_SIZE = 256
+  DEFAULT_BUFFER_SIZE = 1024
 
   # Call +bulk_load+, as that method wraps this method.
   #
@@ -97,5 +97,9 @@ protected
       conn.put_copy_end
       io.close
     end
+    
+    res = conn.get_result
+    STDOUT.puts "Copy Result: #{res.res_status(res.result_status)} on #{res.cmd_tuples}"
+    res.check
   end
 end
