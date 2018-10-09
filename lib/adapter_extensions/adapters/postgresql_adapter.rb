@@ -43,7 +43,7 @@ protected
     execute(q)
   end
 
-  DEFAULT_BUFFER_SIZE = 256
+  DEFAULT_BUFFER_SIZE = 1024
 
   # Call +bulk_load+, as that method wraps this method.
   #
@@ -96,6 +96,7 @@ protected
     ensure
       conn.put_copy_end
       io.close
+      conn.get_result.check
     end
   end
 end
